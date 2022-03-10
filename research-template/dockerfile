@@ -1,0 +1,18 @@
+FROM pytorch/pytorch:1.8.1-cuda11.1-cudnn8-runtime
+
+# set environment variables
+ENV WORKSPACE /workspace
+ENV DATASET_PATH /datasets
+
+# set working directory
+WORKDIR /workspace
+
+# copy dependencies
+COPY requirements.txt /workspace/
+
+# Dependencies and setting
+RUN apt update -y && \
+    apt-get install -y wget gcc libc6-dev g++ && \
+    pip3 install --upgrade pip && \
+    pip3 install -r requirements.txt && \
+    mkdir ${DATASET_PATH}

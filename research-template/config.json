@@ -1,0 +1,26 @@
+{
+    "name": "ndir-template",
+    "n_gpu": 1,
+    "n_worker": 8,
+    "save_dir": "saved/",
+    "arch": {
+        "type": "DupimageModel",
+        "args": {}
+    },
+    "image_data_loader": {
+        "type": "OxfordImageDataLoader",
+        "args":{
+            "data_dir": "/datasets/oxford5k/",
+            "batch_size": 128
+        }
+    },
+    "near_duplicate_network": {
+        "type": "OxfordGroundTruthNetwork",
+        "args":{
+            "data_dir": "/datasets/oxford5k/"
+        }
+    },
+    "metrics": [
+        "precision", "recall", "f1_score"
+    ]
+}
