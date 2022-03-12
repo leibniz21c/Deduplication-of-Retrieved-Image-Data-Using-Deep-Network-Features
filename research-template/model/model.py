@@ -1,5 +1,3 @@
-from itertools import product
-import numpy as np
 import torch.nn as F
 from sklearn.decomposition import PCA
 from sklearn.cluster import AgglomerativeClustering

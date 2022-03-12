@@ -1,3 +1,5 @@
+import numpy as np
+
 def _get_confusion_mat(output_clusters, target_clusters):
     if target_clusters.shape != output_clusters.shape:
         raise IndexError("target_clusters and output_clusters must be same dimension.")
@@ -5,9 +7,9 @@ def _get_confusion_mat(output_clusters, target_clusters):
     summed = target_clusters + output_clusters
     subtracted = target_clusters - output_clusters
     
-    true_positive = (summed == 2).nnz
-    false_positive = (subtracted == -1).nnz
-    false_negative = (subtracted == 1).nnz
+    true_positive = np.count_nonzero(summed == 2)
+    false_positive = np.count_nonzero(subtracted == -1)
+    false_negative = np.count_nonzero(subtracted == 1)
     true_negative = comb - true_positive - false_negative - false_positive
     
     return {'true_positive': true_positive,

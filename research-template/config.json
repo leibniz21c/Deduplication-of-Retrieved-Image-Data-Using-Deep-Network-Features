@@ -8,16 +8,17 @@
         "args": {}
     },
     "image_data_loader": {
-        "type": "OxfordImageDataLoader",
+        "type": "CaliforniaNDDataLoader",
         "args":{
-            "data_dir": "/datasets/oxford5k/",
+            "data_dir": "/datasets/california-nd/",
             "batch_size": 128
         }
     },
     "near_duplicate_network": {
-        "type": "OxfordGroundTruthNetwork",
+        "type": "CaliforniaNDTruthNetwork",
         "args":{
-            "data_dir": "/datasets/oxford5k/"
+            "data_dir": "/datasets/california-nd/",
+            "threshold": "0.1"
         }
     },
     "metrics": [

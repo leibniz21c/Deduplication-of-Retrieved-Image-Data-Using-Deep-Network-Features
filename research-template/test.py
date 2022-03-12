@@ -2,7 +2,6 @@ import argparse
 from itertools import product
 from time import time
 from datetime import timedelta
-from operator import itemgetter
 from tqdm import tqdm
 import torch
 import data_loaders.data_loaders as module_data_loader
@@ -82,6 +81,7 @@ def main(config):
     log = {
         'pca_dim': n_components_pca,
         'explained_variance_ratio': sum(explained_variance_ratio),
+        'correlation_ratio': config['near_duplicate_network']['args']['threshold'],
         'result': []
     }
 
@@ -95,15 +95,16 @@ def main(config):
 
         # predict network
         predict_near_duplicate_network = getattr(module_dataset, config['near_duplicate_network']['type'])(
-            target=False,
             root=config['near_duplicate_network']['args']['data_dir'],
+            target=False,
+            threshold=config['near_duplicate_network']['args']['threshold'],
         )
 
         # Create predict near-duplicate adjacency matrix
         product_iter = product(range(num_data), range(num_data))
         for i, j in product_iter:
             if predict_cluster[i] == predict_cluster[j]:
-                predict_near_duplicate_network.add_edge(labels[i], labels[j])
+                predict_near_duplicate_network.add_edge(i, j)
 
         # Compute metrics
         total_metrics = torch.zeros(len(metric_fns))
@@ -117,7 +118,18 @@ def main(config):
         })
 
     # Logging
-    logger.info(log) # LOGGING
+    logger.info("Test completed!")
+    logger.info("Dimensionality of PCA embedding : " + str(n_components_pca))
+    logger.info("PCA Explained Variance Ratio : " + str(sum(explained_variance_ratio)))
+    logger.info("Ground Truth Correlation Ratio : " + str(config['near_duplicate_network']['args']['threshold']))
+    logger.info("-"*43)
+    logger.info("{:<10} {:<10} {:<10} {:<10}".format("threshold", "precision", "recall", "f1_score"))
+    for result in log['result']:
+        logger.info("{:<10.3f} {:<10.3f} {:<10.3f} {:<10.3f}".format(
+            result['threshold'], 
+            result['metrics']['precision'], 
+            result['metrics']['recall'],
+            result['metrics']['f1_score']))
 
     # Time logging
     end_time = time()
