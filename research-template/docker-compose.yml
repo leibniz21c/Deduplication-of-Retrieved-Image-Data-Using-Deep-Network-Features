@@ -10,7 +10,7 @@ services:
     # Volumns
     volumes:
         - .:/workspace
-        - /hdd/datasets:/datasets:ro
+        - /hdd/datasets:/datasets
     
     # Easy to use network
     network_mode: host

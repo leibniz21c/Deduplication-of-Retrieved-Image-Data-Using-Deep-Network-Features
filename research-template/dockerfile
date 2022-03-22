@@ -15,4 +15,4 @@ RUN apt update -y && \
     apt-get install -y wget gcc libc6-dev g++ && \
     pip3 install --upgrade pip && \
     pip3 install -r requirements.txt && \
-    mkdir ${DATASET_PATH}
+    mkdir /datasets

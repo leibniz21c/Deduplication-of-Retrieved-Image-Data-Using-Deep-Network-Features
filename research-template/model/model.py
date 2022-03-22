@@ -32,24 +32,3 @@ class DupimageModel(BaseModel):
         output_features2 = self.feature_layer2(x)
         return cat([output_features1, output_features2], dim=1)
 
-    @classmethod
-    def pca_embedding(cls, features, n_components):
-        features = features.cpu().numpy()
-        pca = PCA(n_components=n_components)
-        embedded_features = pca.fit_transform(X=features)
-
-        return embedded_features, pca.explained_variance_ratio_
-
-    @classmethod
-    def agglomerative_clustering(cls, features, threshold=0.2):
-        cluster = AgglomerativeClustering(
-            n_clusters=None,
-            affinity='cosine',
-            linkage='single',
-            distance_threshold=threshold
-        )
-        predict_cluster = cluster.fit_predict(features)
-        num_labels = len(predict_cluster)
-        num_cluster = cluster.n_clusters_
-
-        return predict_cluster, num_labels, num_cluster

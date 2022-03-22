@@ -1,44 +1,84 @@
-import numpy as np
+from torchmetrics.functional import confusion_matrix
 
-def _get_confusion_mat(output_clusters, target_clusters):
-    if target_clusters.shape != output_clusters.shape:
-        raise IndexError("target_clusters and output_clusters must be same dimension.")
-    comb = target_clusters.shape[0]*(target_clusters.shape[0] - 1)/2
-    summed = target_clusters + output_clusters
-    subtracted = target_clusters - output_clusters
-    
-    true_positive = np.count_nonzero(summed == 2)
-    false_positive = np.count_nonzero(subtracted == -1)
-    false_negative = np.count_nonzero(subtracted == 1)
-    true_negative = comb - true_positive - false_negative - false_positive
-    
-    return {'true_positive': true_positive,
-            'true_negative': true_negative,
-            'false_positive': false_positive,
-            'false_negative': false_negative}
 
-def precision(output_clusters, target_clusters):
-    """Metric 1. Precision
-    
+def true_positive(prediction, truth):
+    """ Returns the number of true positive for the values in the `prediction` and `truth`
+    tensors, i.e. the amount of positions where the values of `prediction`
+    and `truth` are
+    - True and True (True Positive)
     """
-    confusion_mat = _get_confusion_mat(output_clusters, target_clusters)
-    precision = confusion_mat['true_positive']/(confusion_mat['true_positive'] + confusion_mat['false_positive'])
-    return precision
+    return int(confusion_matrix(prediction, truth, num_classes=2)[1, 1])
 
-def recall(output_clusters, target_clusters):
-    """Metric 2. Recall
-    
+def true_negative(prediction, truth):
+    """ Returns the number of true negative for the values in the `prediction` and `truth`
+    tensors, i.e. the amount of positions where the values of `prediction`
+    and `truth` are
+    - False and False (True Negative)
     """
-    confusion_mat = _get_confusion_mat(output_clusters, target_clusters)
-    recall = confusion_mat['true_positive']/(confusion_mat['true_positive'] + confusion_mat['false_negative'])
-    return recall
+    return int(confusion_matrix(prediction, truth, num_classes=2)[0, 0])
 
-def f1_score(output_clusters, target_clusters):
+
+def false_positive(prediction, truth):
+    """ Returns the number of false positive for the values in the `prediction` and `truth`
+    tensors, i.e. the amount of positions where the values of `prediction`
+    and `truth` are
+    - True and False (False Positive)
+    """
+    return int(confusion_matrix(prediction, truth, num_classes=2)[0, 1])
+
+
+def false_negative(prediction, truth):
+    """ Returns the number of true negative for the values in the `prediction` and `truth`
+    tensors, i.e. the amount of positions where the values of `prediction`
+    and `truth` are
+    - False and True (False Negative)
+    """
+    return int(confusion_matrix(prediction, truth, num_classes=2)[1, 0])
+
+
+def precision(prediction, truth):
+    """Metric 1. Precision(PPV)
+    :(Precision) = \frac{TP}{TP + FP}
+    : In some rare cases, the calculation of Precision or Recall can cause a division by 0.
+    : See this https://github.com/dice-group/gerbil/wiki/Precision,-Recall-and-F1-measure
+    """
+    try:
+        return true_positive(prediction, truth)/(true_positive(prediction, truth) + false_positive(prediction, truth))
+    except:
+        return 1.0
+    
+
+def recall(prediction, truth):
+    """Metric 2. Recall(Sensitivity, true positive rate)
+    :(Recall) = \frac{TP}{TP + FN}
+    : In some rare cases, the calculation of Precision or Recall can cause a division by 0.
+    : See this https://github.com/dice-group/gerbil/wiki/Precision,-Recall-and-F1-measure
+    """
+    try:
+        return true_positive(prediction, truth)/(true_positive(prediction, truth) + false_negative(prediction, truth))
+    except:
+        return 1.0
+
+
+def f1_score(prediction, truth):
     """Metric 3. F1-score
-    
+    :(F1-score) = 2 * \frac{Precision * Recall}{Precision + Recall}
+    : In some rare cases, the calculation of Precision or Recall can cause a division by 0.
+    : See this https://github.com/dice-group/gerbil/wiki/Precision,-Recall-and-F1-measure
     """
-    confusion_mat = _get_confusion_mat(output_clusters, target_clusters)
-    precision = confusion_mat['true_positive']/(confusion_mat['true_positive'] + confusion_mat['false_positive'])
-    recall = confusion_mat['true_positive']/(confusion_mat['true_positive'] + confusion_mat['false_negative'])
-    f1_score = 2*(precision*recall)/(precision + recall)
-    return f1_score
+    rec = recall(prediction, truth)
+    prec = precision(prediction, truth)
+    try:
+        return 2*prec*rec/(prec + rec)
+    except:
+        return 1.0
+
+
+def false_positive_rate(prediction, truth):
+    """Metric 4. False positive rate
+    :(False positive rate) = \frac{FP}{FP + TN}
+    """
+    try:
+        return 1.0 - true_negative(prediction, truth)/(true_negative(prediction, truth) + false_positive(prediction, truth))
+    except:
+        return 0.0
