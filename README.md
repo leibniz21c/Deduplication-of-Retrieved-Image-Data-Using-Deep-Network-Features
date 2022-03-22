@@ -1,4 +1,4 @@
-# dupimage
+# Deduplication of Retrieved Image Data Using Deep Network Features
   Code from the paper "Deduplication of Retrieved Image Data Using Deep Network Features".
 
 ## Abstract
