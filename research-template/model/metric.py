@@ -2,15 +2,16 @@ from torchmetrics.functional import confusion_matrix
 
 
 def true_positive(prediction, truth):
-    """ Returns the number of true positive for the values in the `prediction` and `truth`
+    """Returns the number of true positive for the values in the `prediction` and `truth`
     tensors, i.e. the amount of positions where the values of `prediction`
     and `truth` are
     - True and True (True Positive)
     """
     return int(confusion_matrix(prediction, truth, num_classes=2)[1, 1])
 
+
 def true_negative(prediction, truth):
-    """ Returns the number of true negative for the values in the `prediction` and `truth`
+    """Returns the number of true negative for the values in the `prediction` and `truth`
     tensors, i.e. the amount of positions where the values of `prediction`
     and `truth` are
     - False and False (True Negative)
@@ -19,7 +20,7 @@ def true_negative(prediction, truth):
 
 
 def false_positive(prediction, truth):
-    """ Returns the number of false positive for the values in the `prediction` and `truth`
+    """Returns the number of false positive for the values in the `prediction` and `truth`
     tensors, i.e. the amount of positions where the values of `prediction`
     and `truth` are
     - True and False (False Positive)
@@ -28,7 +29,7 @@ def false_positive(prediction, truth):
 
 
 def false_negative(prediction, truth):
-    """ Returns the number of true negative for the values in the `prediction` and `truth`
+    """Returns the number of true negative for the values in the `prediction` and `truth`
     tensors, i.e. the amount of positions where the values of `prediction`
     and `truth` are
     - False and True (False Negative)
@@ -43,10 +44,12 @@ def precision(prediction, truth):
     : See this https://github.com/dice-group/gerbil/wiki/Precision,-Recall-and-F1-measure
     """
     try:
-        return true_positive(prediction, truth)/(true_positive(prediction, truth) + false_positive(prediction, truth))
+        return true_positive(prediction, truth) / (
+            true_positive(prediction, truth) + false_positive(prediction, truth)
+        )
     except:
         return 1.0
-    
+
 
 def recall(prediction, truth):
     """Metric 2. Recall(Sensitivity, true positive rate)
@@ -55,7 +58,9 @@ def recall(prediction, truth):
     : See this https://github.com/dice-group/gerbil/wiki/Precision,-Recall-and-F1-measure
     """
     try:
-        return true_positive(prediction, truth)/(true_positive(prediction, truth) + false_negative(prediction, truth))
+        return true_positive(prediction, truth) / (
+            true_positive(prediction, truth) + false_negative(prediction, truth)
+        )
     except:
         return 1.0
 
@@ -69,7 +74,7 @@ def f1_score(prediction, truth):
     rec = recall(prediction, truth)
     prec = precision(prediction, truth)
     try:
-        return 2*prec*rec/(prec + rec)
+        return 2 * prec * rec / (prec + rec)
     except:
         return 1.0
 
@@ -79,6 +84,8 @@ def false_positive_rate(prediction, truth):
     :(False positive rate) = \frac{FP}{FP + TN}
     """
     try:
-        return 1.0 - true_negative(prediction, truth)/(true_negative(prediction, truth) + false_positive(prediction, truth))
+        return 1.0 - true_negative(prediction, truth) / (
+            true_negative(prediction, truth) + false_positive(prediction, truth)
+        )
     except:
         return 0.0

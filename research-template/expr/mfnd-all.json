@@ -1,0 +1,34 @@
+{
+    "name": "dupimage-mfnd-all",
+    "n_gpu": 1,
+    "save_dir": "saved/",
+    "pairs_data_loader": {
+        "type": "ProcessedPairDataLoader",
+        "args": {
+            "root": "/datasets/sample-mfnd-all-2022-03-31/",
+            "prep_name": "vgg-partial-compose-pca20",
+            "batch_size": 512,
+            "num_workers": 8
+        }
+    },
+    "distance_thresholds": {
+        "start": 0,
+        "end": 2,
+        "num_threshold": 1000,
+        "logscale": false
+    },
+    "metrics": [
+        "true_positive",
+        "true_negative",
+        "false_positive",
+        "false_negative",
+        "precision",
+        "recall",
+        "f1_score",
+        "false_positive_rate"
+    ],
+    "visualization": [
+        "precision_recall_curve",
+        "roc_curve"
+    ]
+}
